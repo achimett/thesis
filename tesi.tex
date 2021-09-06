@@ -1,15 +1,15 @@
         %%******************************************%%
         %%                                          %%
-        %%        Modello di tesi di laurea         %%
-        %%            di Andrea Giraldin            %%
+        %%              Tesi di laurea              %%
+        %%            di Alessandro Chimetto        %%
         %%                                          %%
-        %%             2 novembre 2012              %%
+        %%             30 settembre 2021            %%
         %%                                          %%
         %%******************************************%%
 
 
 % I seguenti commenti speciali impostano:
-% 1. 
+% 1.
 % 2. PDFLaTeX come motore di composizione;
 % 3. tesi.tex come documento principale;
 % 4. il controllo ortografico italiano per l'editor.
@@ -22,24 +22,24 @@
 % PDF/A filecontents
 \RequirePackage{filecontents}
 \begin{filecontents*}{\jobname.xmpdata}
-  \Title{Document’s title}
-  \Author{Author’s name}
+  \Title{Analisi, progettazione e implementazione di un back-end in Node.js per un e-commerce basato su blockchain Ethereum​}
+  \Author{Alessandro Chimetto}
   \Language{it-IT}
-  \Subject{The abstract, or short description.}
-  \Keywords{keyword1\sep keyword2\sep keyword3}
+  \Subject{Analisi, progettazione e implementazione di un back-end in Node.js per un e-commerce basato su blockchain Ethereum​}
+  \Keywords{Blockchain\sep Ethereum\sep Node.js\sep E-commerce\sep Back-end​}
 \end{filecontents*}
 
 \documentclass[10pt,                    % corpo del font principale
                a4paper,                 % carta A4
                twoside,                 % impagina per fronte-retro
                openright,               % inizio capitoli a destra
-               english,                 
-               italian,                 
-               ]{book}    
+               english,
+               italian,
+               ]{book}
 
 %**************************************************************
 % Importazione package
-%************************************************************** 
+%**************************************************************
 
 \PassOptionsToPackage{dvipsnames}{xcolor} % colori PDF/A
 
@@ -88,16 +88,16 @@
 
 \usepackage{mparhack,fixltx2e,relsize}  % finezze tipografiche
 
-\usepackage{nameref}                    % visualizza nome dei riferimenti                                      
+\usepackage{nameref}                    % visualizza nome dei riferimenti
 \usepackage[font=small]{quoting}        % citazioni
 
 \usepackage{subfig}                     % sottofigure, sottotabelle
 
 \usepackage[italian]{varioref}          % riferimenti completi della pagina
 
-\usepackage{booktabs}                   % tabelle                                       
-\usepackage{tabularx}                   % tabelle di larghezza prefissata                                    
-\usepackage{longtable}                  % tabelle su più pagine                                        
+\usepackage{booktabs}                   % tabelle
+\usepackage{tabularx}                   % tabelle di larghezza prefissata
+\usepackage{longtable}                  % tabelle su più pagine
 \usepackage{ltxtable}                   % tabelle su più pagine e adattabili in larghezza
 
 \usepackage[toc, acronym]{glossaries}   % glossario
@@ -108,8 +108,8 @@
                                         % 4. compilare due volte tesi.tex.
 
 \usepackage[backend=biber,style=verbose-ibid,hyperref,backref]{biblatex}
-                                        % eccellente pacchetto per la bibliografia; 
-                                        % produce uno stile di citazione autore-anno; 
+                                        % eccellente pacchetto per la bibliografia;
+                                        % produce uno stile di citazione autore-anno;
                                         % lo stile "numeric-comp" produce riferimenti numerici
                                         % per includerlo nel documento bisogna:
                                         % 1. compilare una prima volta tesi.tex;
@@ -125,9 +125,9 @@
 \frontmatter
 \input{inizio-fine/frontespizio}
 \input{inizio-fine/colophon}
-\input{inizio-fine/dedica}
-\input{inizio-fine/sommario}
-\input{inizio-fine/ringraziamenti}
+%\input{inizio-fine/dedica}
+%\input{inizio-fine/sommario}
+%\input{inizio-fine/ringraziamenti}
 \input{inizio-fine/indici}
 \cleardoublepage
 
@@ -136,14 +136,14 @@
 %**************************************************************
 \mainmatter
 \input{capitoli/capitolo-1}             % Introduzione
-\input{capitoli/capitolo-2}             % Processi
-\input{capitoli/capitolo-3}             % Kick-Off
-\input{capitoli/capitolo-4}             % Concept Preview
-\input{capitoli/capitolo-5}             % Product Prototype
-\input{capitoli/capitolo-6}             % Product Design Freeze e SOP
+\input{capitoli/capitolo-2}
+\input{capitoli/capitolo-3}             % Analisi dei Requisiti
+\input{capitoli/capitolo-4}             % Tecnologie
+\input{capitoli/capitolo-5}             % Progettazione
+\input{capitoli/capitolo-6}             % Implementazione
 \input{capitoli/capitolo-7}             % Conclusioni
-\appendix                               
-\input{capitoli/capitolo-A}             % Appendice A
+%\appendix
+%\input{capitoli/capitolo-A}             % Appendice A
 
 %**************************************************************
 % Materiale finale

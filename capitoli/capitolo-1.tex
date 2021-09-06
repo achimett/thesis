@@ -7,47 +7,41 @@
 \label{cap:introduzione}
 %**************************************************************
 
-Introduzione al contesto applicativo.\\
+%**************************************************************
+\section{L'idea}
+La crypto-valuta \textbf{Ethereum}, oltre alle funzionalità comunemente offerte da altre crypto-valute (come \textbf{Bitcoin}), permette di fare il rilascio di software sulla propria blockchain sotto forma di programmi chiamati \textbf{smart contract} in modo da poter creare infrastrutture decentralizzate la cui esecuzione sia affidata ai \textit{miner}.
+\\\\
+Lo standard per smart contract \textbf{ERC-20} introduce il concetto di \textbf{Fungible Token}, ovvero "gettoni" virtuali che mantengono la proprietà di essere l'uno identico all'altro in termini di tipo e valore.
+\\\\
+L'azienda Sync Lab, come suo progetto di ricerca, sta sviluppando un token basato su standard \textbf{ERC-20} per rappresentare il valore di un prodotto in vendita presso un e-commerce (ovvero un prodotto vale un certo numero di token).
+\\\\
+Al fine di dare sostanza alla propria ricerca sui fungible token, l'azienda Sync Lab propone il progetto descritto da questo documento il cui scopo sta nel creare un back-end per e-commerce mediante un framework per piattaforma \textbf{Node.js} che disponga delle seguenti funzionalità:
+\begin{itemize}
+    \item catalogo prodotti;
+    \item gestione utenti;
+    \item comunicazione tramite \textbf{API REST} con il front-end (sviluppato da altri parallelamente al back-end);
+    \item comunicazione con lo smart contract del token messo a disposizione da Sync Lab per operazioni di acquisto e conversione di valuta.
+\end{itemize}
 
-\noindent Esempio di utilizzo di un termine nel glossario \\
-\gls{api}. \\
-
-\noindent Esempio di citazione in linea \\
-\cite{site:agile-manifesto}. \\
-
-\noindent Esempio di citazione nel pie' di pagina \\
-citazione\footcite{womak:lean-thinking} \\
 
 %**************************************************************
 \section{L'azienda}
+Sync Lab è un'azienda nata nel 2002 come software house poi successivamente diventata system integrator che opera prevalentemente nel settore della consulenza per realizzazione e mantenimento di infrastrutture informatiche aziendali oltre che mobile e videosorveglianza.
 
-Descrizione dell'azienda.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=6cm]{immagini/logo_synclab.png}
+    \caption{Logo Sync Lab}
+\end{figure}
+
+\noindent Sync Lab ha più di 150 clienti diretti e finali, con un organico aziendale di 200 dipendenti distribuiti tra le 5 sedi di Padova, Verona, Milano, Roma, Napoli.
+\\\\
+\noindent Pur ricoprendo il territorio italiano con cinque diverse sedi  riesce a mantenersi in equilibrio fra struttura e flessibilità garantendo l'inserimento in un ambiente che, seppur organizzato, valuta e accoglie le proposte dei suoi membri compresi stagisti e coloro di più recente assunzione.
 
 %**************************************************************
-\section{L'idea}
-
-Introduzione all'idea dello stage.
-
-%**************************************************************
-\section{Organizzazione del testo}
-
-\begin{description}
-    \item[{\hyperref[cap:processi-metodologie]{Il secondo capitolo}}] descrive ...
-    
-    \item[{\hyperref[cap:descrizione-stage]{Il terzo capitolo}}] approfondisce ...
-    
-    \item[{\hyperref[cap:analisi-requisiti]{Il quarto capitolo}}] approfondisce ...
-    
-    \item[{\hyperref[cap:progettazione-codifica]{Il quinto capitolo}}] approfondisce ...
-    
-    \item[{\hyperref[cap:verifica-validazione]{Il sesto capitolo}}] approfondisce ...
-    
-    \item[{\hyperref[cap:conclusioni]{Nel settimo capitolo}}] descrive ...
-\end{description}
-
-Riguardo la stesura del testo, relativamente al documento sono state adottate le seguenti convenzioni tipografiche:
-\begin{itemize}
-	\item gli acronimi, le abbreviazioni e i termini ambigui o di uso non comune menzionati vengono definiti nel glossario, situato alla fine del presente documento;
-	\item per la prima occorrenza dei termini riportati nel glossario viene utilizzata la seguente nomenclatura: \emph{parola}\glsfirstoccur;
-	\item i termini in lingua straniera o facenti parti del gergo tecnico sono evidenziati con il carattere \emph{corsivo}.
-\end{itemize}
+\section{Lo stage}
+Visto l'attuale periodo di pandemia COVID-19, lo stage si è svolto per lo più in telelavoro per la sua intera durata di otto settimane con un giorno a settimana in presenza nella sede di Padova per un aggiornamento più approfondito con tutor esterno e parti coinvolte.
+\\\\
+Nonostante da parte di Sync Lab venga richiesto a dipendenti e stagisti di lavorare il più possibile in autonomia, il tutor esterno è rimasto a disposizione tramite chat e videochiamata per supporto in caso di dubbi e brevi aggiornamenti per tutta la durata dello stage nei giorni in telelavoro.
+\\\\
+Come precedentemente accennato, viene segnalato come punto a favore il fatto che, durante questa attività, ogni proposta sul piano tecnico, opportunamente motivata, sia stata presa in considerazione dal tutor esterno ed eventualmente applicata qualora ritenuta idonea. Grazie a tale politica, si è venuto a creare un ambiente virtuoso in cui venisse valorizzato il pensiero critico nei confronti delle decisioni da prendere.
