@@ -5,84 +5,59 @@
 %**************************************************************
 \chapter{Progettazione}
 \label{cap:progettazione}
-Questo capitolo ha l'obiettivo di presentare l'architettura del prodotto e le motivazioni a favore delle scelte architetturali prese.
+Questo capitolo ha l'obiettivo di presentare l'architettura del prodotto e, se necessario, le motivazioni a favore delle scelte architetturali prese.
 %**************************************************************
 
 %**************************************************************
 \section{Architettura}
+    \subsection{Database}
+    Viene presentata l'architettura del database relazionale mediante la \autoref{img:database}. Si noti che, in caso di relazione \textit{many-to-many}, la tabella \textit{pivot} non viene riportata in questo diagramma ma ne viene indicato il nome sulla relazione.
 
-%\intro{Breve introduzione al capitolo}\\
-%
-%\section{Casi d'uso}
-%
-%Per lo studio dei casi di utilizzo del prodotto sono stati creati dei diagrammi.
-%I diagrammi dei casi d'uso (in inglese \emph{Use Case Diagram}) sono diagrammi di tipo \gls{uml} dedicati alla descrizione delle funzioni o servizi offerti da un sistema, così come sono percepiti e utilizzati dagli attori che interagiscono col sistema stesso.
-%Essendo il progetto finalizzato alla creazione di un tool per l'automazione di un processo, le interazioni da parte dell'utilizzatore devono essere ovviamente ridotte allo stretto necessario. Per questo motivo i diagrammi d'uso risultano semplici e in numero ridotto.
-%
-%\begin{figure}[!h]
-%    \centering
-%    \includegraphics[width=0.9\columnwidth]{usecase/scenario-principale}
-%    \caption{Use Case - UC0: Scenario principale}
-%\end{figure}
-%
-%\begin{usecase}{0}{Scenario principale}
-%\usecaseactors{Sviluppatore applicativi}
-%\usecasepre{Lo sviluppatore è entrato nel plug-in di simulazione all'interno dell'IDE}
-%\usecasedesc{La finestra di simulazione mette a disposizione i comandi per configurare, registrare o eseguire un test}
-%\usecasepost{Il sistema è pronto per permettere una nuova interazione}
-%\label{uc:scenario-principale}
-%\end{usecase}
-%
-%\section{Tracciamento dei requisiti}
-%
-%Da un'attenta analisi dei requisiti e degli use case effettuata sul progetto è stata stilata la tabella che traccia i requisiti in rapporto agli use case.\\
-%Sono stati individuati diversi tipi di requisiti e si è quindi fatto utilizzo di un codice identificativo per distinguerli.\\
-%Il codice dei requisiti è così strutturato R(F/Q/V)(N/D/O) dove:
-%\begin{enumerate}
-%	\item[R =] requisito
-%    \item[F =] funzionale
-%    \item[Q =] qualitativo
-%    \item[V =] di vincolo
-%    \item[N =] obbligatorio (necessario)
-%    \item[D =] desiderabile
-%    \item[Z =] opzionale
-%\end{enumerate}
-%Nelle tabelle \ref{tab:requisiti-funzionali}, \ref{tab:requisiti-qualitativi} e \ref{tab:requisiti-vincolo} sono riassunti i requisiti e il loro tracciamento con gli use case delineati in fase di analisi.
-%
-%\newpage
-%
-%\begin{table}%
-%\caption{Tabella del tracciamento dei requisti funzionali}
-%\label{tab:requisiti-funzionali}
-%\begin{tabularx}{\textwidth}{lXl}
-%\hline\hline
-%\textbf{Requisito} & \textbf{Descrizione} & \textbf{Use Case}\\
-%\hline
-%RFN-1     & L'interfaccia permette di configurare il tipo di sonde del test & UC1 \\
-%\hline
-%\end{tabularx}
-%\end{table}%
-%
-%\begin{table}%
-%\caption{Tabella del tracciamento dei requisiti qualitativi}
-%\label{tab:requisiti-qualitativi}
-%\begin{tabularx}{\textwidth}{lXl}
-%\hline\hline
-%\textbf{Requisito} & \textbf{Descrizione} & \textbf{Use Case}\\
-%\hline
-%RQD-1    & Le prestazioni del simulatore hardware deve garantire la giusta esecuzione dei test e non la generazione di falsi negativi & - \\
-%\hline
-%\end{tabularx}
-%\end{table}%
-%
-%\begin{table}%
-%\caption{Tabella del tracciamento dei requisiti di vincolo}
-%\label{tab:requisiti-vincolo}
-%\begin{tabularx}{\textwidth}{lXl}
-%\hline\hline
-%\textbf{Requisito} & \textbf{Descrizione} & \textbf{Use Case}\\
-%\hline
-%RVO-1    & La libreria per l'esecuzione dei test automatici deve essere riutilizzabile & - \\
-%\hline
-%\end{tabularx}
-%\end{table}%
+    \begin{figure}[p]
+        \centering
+        \hspace*{-2cm}
+        \includegraphics[width=16cm]{database.png}
+        \caption{Diagramma Entità-Relazione del database}
+        \label{img:database}
+    \end{figure}
+
+    \subsection{Back-end}
+        \subsubsection{Idee generali}
+        AdonisJS, in caso di utilizzo per la realizzazione di back-end che mettano a disposizione API REST, arriva out-of-the-box con una architettura monolitica basata sui principi della \textit{layered architecture} per i quali le dipendenze vanno da uno strato a quello immediatamente sottostante.
+        \\\\
+        In AdonisJS (così come in Laravel) è stato individuato un caso d'uso comune e sono stati forniti tutti gli strumenti per poterlo modellare efficacemente ed efficientemente. Questo caso d'uso è quello del back-end che accetta chiamate REST, sulla base di esse esegue delle operazioni di lettura scrittura su database e quindi prepara una risposta da ritornare al chiamante.
+        \\\\
+        Nella \autoref{img:architettura} notiamo tre diversi strati:
+        \begin{enumerate}
+            \item \textbf{API layer}: si occupa di definire: \textit{endpoint} REST, quali \textit{query param} sono accettati in ingresso ed eventuali middleware [\autoref{impl:middleware}] che il flusso di esecuzione dovrà attraversare prima di arrivare nei \textit{controller} ove verrà gestita la richiesta;
+            \item \textbf{Business layer}: questo strato comprende i \textit{controller} che gestiscono la richiesta del front-end una volta attraversati i middleware; da qui può partire una richiesta di lettura/scrittura al database mediante il Persistence Layer e/o partire una richiesta a servizi esterni mediante appositi adapter;
+            \item \textbf{Persistence layer}: si interpone fra Business Layer e Database facendo da traduttore mediante i modelli messi a disposizione dall'\textit{ORM} [\autoref{impl:orm}].
+        \end{enumerate}
+
+        \subsubsection{Adapter per servizi esterni}
+        Al fine di aggiungere funzionalità non previste dal caso d'uso generale preso in considerazione da Adonis e mantenere il più possibile alta la manutenibilità dell'applicativo, si è fatto uso del pattern \textit{adapter} per disaccoppiare le classi controller dalle classi delle librerie web3.js [\autoref{img:adapter-web3js}] e CoinGecko-API [\autoref{img:adapter-coingecko}].
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=9cm]{adapter-coingecko.png}
+            \caption{Adapter per la libreria CoinGecko-API}
+            \label{img:adapter-coingecko}
+        \end{figure}
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=14cm]{adapter-web3js.png}
+            \caption{Adapter per la libreria web3.js}
+            \label{img:adapter-web3js}
+        \end{figure}
+
+
+    \begin{landscape}
+        \begin{figure}[p]
+            \centering
+            \hspace*{-4.5cm}
+            \includegraphics[width=28cm]{architettura.png}
+            \caption{Diagramma UML delle classi del back-end con suddivisione in strati}
+            \label{img:architettura}
+        \end{figure}
+    \end{landscape}

@@ -5,51 +5,246 @@
 %**************************************************************
 \chapter{Implementazione}
 \label{cap:implementazione}
-Questo capitolo ha l'obiettivo di presentare le idee generali e alcune peculiarità rilevanti riguardo alla codifica del prodotto.
+Questo capitolo ha l'obiettivo di presentare alcune peculiarità rilevanti riguardo alla codifica del prodotto con architettura e tecnologie precedentemente presentate.
 %**************************************************************
 
 %**************************************************************
-%\section{Idee generali}
+\section{Middleware}
+\label{impl:middleware}
+I \textbf{middleware} sono funzioni che vengono eseguite dopo una richiesta HTTP e prima che questa arrivi al relativo \textbf{controller}. Più middleware possono essere concatenati fra loro e riutilizzati per richieste HTTP diverse. Ogni middleware dispone di una funzione \textsc{next} che richiama il middleware successivo e ciò permette di fare dei controlli ed elaborazioni sull'input prima che questo raggiunga il controller eventualmente interropmendo l'esecuzione della richiesta qualora necessario.
+
+\begin{lstlisting}[language=JavaScript]
+Route.put('/categories/:category_id', 'CategoriesController.updateCategory')
+.where('category_id', {
+    match: /^[0-9]+$/,
+    cast: (category_id: string) => Number(category_id),
+})
+.middleware('auth')
+.middleware('validate:NewCategory');
+\end{lstlisting}
+
+Si noti, ad esempio, la chiamata PUT a \textsc{/categories/\{category\_id\}} che, dopo aver controllato la conformità del parametro inserito, manda la richiesta al middleware \textsc{auth} per il controllo delle credenziali mediante \textit{OAT} [\autoref{impl:oat}] e, in caso di successo, indirizza la richiesta verso il middleware \textsc{validate} che dovrà verificare se l'input ricevuto sia di tipo \textsc{NewCategory} mediante un apposito \textit{validator} [\autoref{impl:validator}]. Se anche in questo caso il controllo andrà a buon fine, verrà richiamato il metodo \textsc{updateCategory} del controller \textsc{CategoriesController} che gestirà opportunamente la richiesta.
+
+%**************************************************************
+\section{Validator}
+\label{impl:validator}
+I \textbf{validator} sono oggetti che permettono di verificare la validità dei dati in input alla richiesta verificando che i campi dati ricevuti siano corretti sintatticamente e semanticamente.
+
+\begin{lstlisting}[language=JavaScript]
+export default class NewProductValidator {
+    constructor(protected ctx: HttpContextContract) {}
+
+    public schema = schema.create({
+        title: schema.string({ trim: true }),
+        description: schema.string({ trim: true }),
+        categories: schema.array().members(
+            schema.number([
+                rules.unsigned(),
+                rules.exists({
+                    table: 'categories',
+                    column: 'id',
+                }),
+            ])
+        ),
+        price_in_eur: schema.number([rules.unsigned()]),
+    });
+
+    public messages = {};
+}
+\end{lstlisting}
+
+Nell'esempio, si nota come venga verificata la presenza e conformità dei campi necessari per far sì che l'input sia conforme al tipo \textsc{NewProduct}. \textsc{title} e \textsc{description} devono essere stringhe, \textsc{price\_in\_eur} deve essere un numero senza segno mentre \textsc{categories} deve essere un array di numeri senza segno corrispondenti agli id delle categorie di appartenenza del prodotto. Si noti come il validator si interfacci automaticamente con l'\textit{ORM} [\autoref{impl:orm}] per verificare che gli id delle categorie inseriti siano effettivamente presenti nella opportuna tabella del database.
+
+%**************************************************************
+\section{Opaque Authorization Token}
+\label{impl:oat}
+Adonis supporta un unico metodo di autorizzazione per le chiamate REST ovvero l'\textbf{OAT} o \textbf{Opaque Authorization Token} (si noti che il token di autorizzazione non ha nulla a che vedere con i token fungibili messi a disposizione da Ethereum). È una stringa di caratteri che identifica l'utente e ne certifica l'avvenuto \textit{login}. Adonis rilascia questo token alla richiesta di \textit{login} e, al fine di effettuare una qualsiasi richiesta con privilegi superiori a quello dell'utente non autenticato, si dovrà presentare questo token nel'header \textsc{Authorization} preceduto dalla dicitura \textsc{Bearer}. Il middleware \textsc{auth} verificherà se il token sia valido e non scaduto e il controller verificherà che i privilegi del richiedente siano corretti mediante un \textbf{bouncer} [\autoref{impl:bouncer}]. La dicitura \textit{opaque} si riferisce al fatto che il token è decodificabile solo dal back-end e non dall'utente che lo possiede.
+\\\\
+In seguito si può vedere un esempio di una richiesta GET \textsc{/users} effettuabile solo da un amministratore:
+\begin{lstlisting}
+curl -i -X GET \
+-H 'Authorization: Bearer pUBcABP6j8MM6Xy9JvGcZZHJnh9zCY' \
+http://localhost:3333/users
+\end{lstlisting}
+
 
 %**************************************************************
 \section{ORM Lucid}
+\label{impl:orm}
+\textit{ORM} sta per \textbf{Object–relational mapping} ed è una tecnica di programmazione che ha come obiettivo quello di mappare un \textit{model} (ovvero un oggetto, un'istanza di classe) su una riga di tabella di database relazionale e viceversa. Perché ciò funzioni, la classe a cui appartiene l'oggetto deve avere dei campi dati corrispondenti per nome e tipo alle colonne di una tabella del database.
+\\\\
+Come esempio, si noti la corrispondenza fra i campi dati della classe \textsc{Category} e le colonne della tabella \textsc{categories} (traduzione da \textit{camelCase} a \textit{snake\_case} avviene automaticamente):
+
+\begin{lstlisting}[language=JavaScript]
+export default class Category extends BaseModel {
+    @column({ isPrimary: true })
+    public id: number;
+
+    @column()
+    public name: string;
+
+    @column.dateTime({ autoCreate: true, serializeAs: null })
+    public createdAt: DateTime;
+
+    @column.dateTime({
+        autoCreate: true,
+        autoUpdate: true,
+        serializeAs: null,
+    })
+    public updatedAt: DateTime;
+}
+\end{lstlisting}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=5cm]{categories-table.png}
+    \caption{Tabella \textsc{categories}}
+\end{figure}
+
+Quando una o più righe saranno lette dalla tabella \textsc{categories}, una o più istanze corrispondenti di classe \textsc{Category} saranno disponibili al back-end. Il salvataggio di una istanza di \textsc{Category} provocherà l'inserimento di una nuova riga nella tabella \textsc{categories} se non ancora esistente altrimenti modificherà la riga corrispondente.
+\\\\
+L'ORM di Adonis, \textbf{Lucid}, a differenza di altri ORM (come \textbf{JPA} del framework \textbf{Spring}) arriva out-of-the-box con alcuni metodi fondamentali per lettura e scrittura disponibili come metodi statici della classe \textsc{BaseModel} che deve essere estesa da ogni \textit{model}.
+\\\\
+Esempi di metodi disponibili su \textsc{BaseModel}:
+
+\begin{lstlisting}[language=JavaScript]
+// Richiesta di tutte le categorie
+const result: Category[] = await Category.all();
+
+// Inserimento di una nuova categoria
+const category: Category = new Category();
+category.name = 'Elettrodomestici';
+await category.save();
+
+// Lettura e cancellazione categoria
+const category: Category | null = await Category.find(1);
+await category.delete();
+\end{lstlisting}
+
+Nel caso in cui fosse necessario costruire query più complesse, a differenza di altri ORM che richiedono la scrittura come stringa della query SQL, Lucid indirizza verso l'utilizzo del proprio \textit{query builder} integrato che permette di creare query (e comporle con eventuali \textit{subquery}) senza scrivere codice SQL ma solo mediante TypeScript.
+\\\\
+Il seguente esempio (che fa uso di \textit{subquery}) ricerca un utente registrato dato l'indirizzo di uno qualsiasi dei wallet Ethereum collegati alla sua utenza:
+\begin{lstlisting}[language=JavaScript]
+let walletAddress: string // Indirizzo wallet appartenente a user
+
+const user: User | null = await User.query()
+    .where('id', Wallet.query()
+        .select('userId')
+        .where('address', walletAddress)
+        .limit(1))
+    .first();
+\end{lstlisting}
+%**************************************************************
+\section{Bouncer}
+\label{impl:bouncer}
+I \textbf{bouncer} sono funzioni di Adonis che permettono di controllare che qualsiasi utente che effettui una richiesta riguardante una risorsa disponga dei privilegi necessari per poterla utilizzare. Più funzioni bouncer riguardanti una stessa risorsa possono essere raggruppati in apposite classi chiamate \textbf{policy}.
+\\\\
+Nell'esempio seguente, viene riportata la policy di accesso agli ordini:
+\begin{lstlisting}[language=JavaScript]
+export default class OrderPolicy extends BasePolicy {
+    // Prima di qualsiasi altro metodo, viene richiamato
+    // `before()` che autorizza di default admin e super-admin
+    public async before(user: User) {
+        if (user && (user.role === UserRole.ADMIN || user.role === UserRole.SUPERADMIN)) {
+            return true;
+        }
+    }
+
+    // Utenti autenticati non possono vedere tutti gli ordini
+    public async viewAll() {
+        return false;
+    }
+
+    // Utenti autenticati possono vedere solo i loro ordini
+    public async viewList(user: User, orders: Order[]) {
+        return (
+            orders &&
+            orders.every(async (order: Order) => {
+                return await this.view(user, order);
+            })
+        );
+    }
+
+    // Utenti autenticati possono vedere solo i loro ordini
+    public async view(user: User, order: Order) {
+        const buyer: User | null = await User.query()
+            .whereHas('orders', (ordersQuery) => {
+                ordersQuery.where('id', order.id);
+            })
+            .first();
+
+        return order && buyer && buyer.id === user.id;
+    }
+
+    // Utenti autenticati non possono modificare ordini
+    public async update() {
+        return false;
+    }
+}
+
+// Richiesta del diritto di visualizzazione ordine dentro ad un controller
+let orderObject: Order = ...
+await bouncer
+    .with('OrderPolicy')
+    .authorize('view', orderObject); // parametro `user` viene ricavato automaticamente
+\end{lstlisting}
 
 %**************************************************************
-\section{Stato attuale dell'IoC Container in AdonisJS}
+\section{Test}
+Adonis utilizza la libreria \textbf{japa} per effettuare test di unità ed integrazione. La suite, durante i test d'integrazione, permette di fare chiamate HTTP a localhost e annullare tutte le operazioni di scrittura su database a fine test. Ciò permette di fare test d'integrazione approfonditi che attraversino tutti e tre gli strati del monolite.
+\\\\
+A parte i due \textit{adapter} per le due librerie esterne, si è ritenuto non necessario svolgere test di unità per il back-end in quanto buona parte della logica interna ai controller viene gestita da tool forniti da Adonis. Se si \textit{mockassero} tutte le parti del framework, il test d'unità risulterebbe poco significativo in quanto il codice da testare sarebbe poco. Sono, invece, presenti test di integrazione che considerano più unità dell'applicativo.
 
-%\intro{Breve introduzione al capitolo}\\
-%
-%%**************************************************************
-%\section{Tecnologie e strumenti}
-%\label{sec:tecnologie-strumenti}
-%
-%Di seguito viene data una panoramica delle tecnologie e strumenti utilizzati.
-%
-%\subsection*{Tecnologia 1}
-%Descrizione Tecnologia 1.
-%
-%\subsection*{Tecnologia 2}
-%Descrizione Tecnologia 2
-%
-%%**************************************************************
-%\section{Ciclo di vita del software}
-%\label{sec:ciclo-vita-software}
-%
-%%**************************************************************
-%\section{Progettazione}
-%\label{sec:progettazione}
-%
-%\subsubsection{Namespace 1} %**************************
-%Descrizione namespace 1.
-%
-%\begin{namespacedesc}
-%    \classdesc{Classe 1}{Descrizione classe 1}
-%    \classdesc{Classe 2}{Descrizione classe 2}
-%\end{namespacedesc}
-%
-%
-%%**************************************************************
-%\section{Design Pattern utilizzati}
-%
-%%**************************************************************
-%\section{Codifica}
+%**************************************************************
+\section{IoC Container}
+\label{impl:ioc}
+Al fine di permettere l'aggiunta di funzionalità oltre alla gestione REST e ORM, è possibile dichiarare le proprie dipendenze all'interno delle classi che lo richiedono e lasciare che l'\textbf{IoC Container} faccia \textit{dependency injection}. Adonis mette a disposizione delle apposite classi chiamate \textbf{provider} nelle quali registrare i binding alla partenza dell'applicazione.
+\\\\
+Esempi di binding con scope \textit{singleton} riguardanti gli \textit{adapter} per le librerie esterne CoinGecko-API e web3.js:
+\begin{lstlisting}[language=JavaScript]
+export default class AppProvider {
+    constructor(protected app: ApplicationContract) {}
+
+    // Register your own bindings
+    public register() {
+        this.app.container.singleton(
+            'External/Web3',
+            () => new Web3(Env.get('BLOCKCHAIN_NODE_PROVIDER_URL'))
+        );
+
+        this.app.container.singleton('External/CoinGecko', () => new CoinGecko());
+
+        this.app.container.singleton(
+            'Trendy/Exchange',
+            () =>
+            new CoinGeckoExchangeProvider(
+                this.app.container.resolveBinding('External/CoinGecko'),
+                this.app.container.resolveBinding('Adonis/Core/Logger'),
+                this.app.container.resolveBinding('Adonis/Core/Config')
+            )
+        );
+
+        this.app.container.singleton(
+            'External/Blockchain',
+            () =>
+            new Web3jsBlockchainProvider(
+                this.app.container.resolveBinding('External/Web3'),
+                this.app.container.resolveBinding('Adonis/Core/Logger'),
+                this.app.container.resolveBinding('Adonis/Core/Config')
+            )
+        );
+    }
+}
+\end{lstlisting}
+
+\newpage
+
+    \subsection{Mancanza documentazione scrittura package}
+    \label{impl:ioc:no-docs}
+    Dalla documentazione sembra che il modo migliore per aggiungere il supporto a librerie esterne sia quello di creare dei \textit{package} specifici per AdonisJS per poi configurarli mediante l'IoC Container. Il problema è che la documentazione riguardante la creazione di package Adonis deve ancora essere scritta e i tentativi di reverse engineering di tale funzionamento sono stati vani. La metodologia utilizzata per integrare feature funziona ma evidentemente non è quella più corretta in quanto alcune funzionalità come la creazione di \textit{mock} da parte dell'IoC Container per i test d'integrazione non sembra funzionare a dovere.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=10cm]{package-dev-trello.png}
+        \caption[Card Trello package development AdonisJS]{Il task riguardante la scrittura di package è ancora presente come card sul \textbf{Trello} ufficiale di AdonisJS ed è ancora in corso.}
+    \end{figure}

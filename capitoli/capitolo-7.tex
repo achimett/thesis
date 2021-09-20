@@ -6,3 +6,128 @@
 \chapter{Conclusioni}
 \label{cap:conclusioni}
 %**************************************************************
+
+%**************************************************************
+\section{Soddisfacimento requisiti}
+Nella tabella sono indicati i requisiti soddisfatti durante l'implementazione della componente back-end.
+\\\\
+\noindent
+\begin{tabular}{ |p{1.2cm}|p{1.5cm}|p{5cm}|p{2cm}| }
+    \hline
+    \multicolumn{4}{|c|}{\textbf{Gestione accesso}}\\
+    \hline
+    \hline
+    \textbf{Codice} & \textbf{Verbo} & \textbf{URI} & \textbf{Soddisfatto}\\
+    \hline
+    RA01 & POST & \textsc{/login} & \ding{51}\\
+    \hline
+    RA02 & POST & \textsc{/logout} & \ding{51}\\
+    \hline
+    RA03 & POST & \textsc{/signup} & \ding{51}\\
+    \hline
+\end{tabular}
+\\\\\\
+\begin{tabular}{ |p{1.2cm}|p{1.5cm}|p{5cm}|p{2cm}| }
+    \hline
+    \multicolumn{4}{|c|}{\textbf{Gestione utenti}}\\
+    \hline
+    \hline
+    \textbf{Codice} & \textbf{Verbo} & \textbf{URI} & \textbf{Soddisfatto}\\
+    \hline
+    RU01 & GET & \textsc{/users} & \ding{51}\\
+    \hline
+    RU02 & GET & \textsc{/users/\{user\_id\}} & \ding{51}\\
+    \hline
+    RU03 & PUT & \textsc{/users/\{user\_id\}} & \ding{51}\\
+    \hline
+    RU04 & GET & \textsc{/users/\{user\_id\}/orders} & \ding{51}\\
+    \hline
+\end{tabular}
+\\\\\\
+\begin{tabular}{ |p{1.2cm}|p{1.5cm}|p{5cm}|p{2cm}| }
+    \hline
+    \multicolumn{4}{|c|}{\textbf{Gestione categorie di prodotti}}\\
+    \hline
+    \hline
+    \textbf{Codice} & \textbf{Verbo} & \textbf{URI} & \textbf{Soddisfatto}\\
+    \hline
+    RC01 & GET & \textsc{/categories} & \ding{51}\\
+    \hline
+    RC02 & POST & \textsc{/categories} & \ding{51}\\
+    \hline
+    RC03 & GET & \textsc{/categories/\{category\_id\}} & \ding{51}\\
+    \hline
+    RC04 & PUT & \textsc{/categories/\{category\_id\}} & \ding{51}\\
+    \hline
+    RC05 & DELETE & \textsc{/categories/\{category\_id\}} & \ding{51}\\
+    \hline
+\end{tabular}
+\\\\\\
+\begin{tabular}{ |p{1.2cm}|p{1.5cm}|p{5cm}|p{2cm}| }
+    \hline
+    \multicolumn{4}{|c|}{\textbf{Gestione prodotti}}\\
+    \hline
+    \hline
+    \textbf{Codice} & \textbf{Verbo} & \textbf{URI} & \textbf{Soddisfatto}\\
+    \hline
+    RP01 & GET & \textsc{/products} & \ding{51}\\
+    \hline
+    RP02 & POST & \textsc{/products} & \ding{51}\\
+    \hline
+    RP03 & GET & \textsc{/products/\{product\_id\}} & \ding{51}\\
+    \hline
+    RP04 & PUT & \textsc{/products/\{product\_id\}} & \ding{51}\\
+    \hline
+    RP05 & DELETE & \textsc{/products/\{products\_id\}} & \ding{51}\\
+    \hline
+\end{tabular}
+\\\\\\
+\begin{tabular}{ |p{1.2cm}|p{1.5cm}|p{5cm}|p{2cm}| }
+    \hline
+    \multicolumn{4}{|c|}{\textbf{Gestione ordini}}\\
+    \hline
+    \hline
+    \textbf{Codice} & \textbf{Verbo} & \textbf{URI} & \textbf{Soddisfatto}\\
+    \hline
+    RO01 & GET & \textsc{/orders} & \ding{51}\\
+    \hline
+    RP02 & POST & \textsc{/orders} & \ding{51}\\
+    \hline
+    RP03 & PUT & \textsc{/orders/\{order\_id\}} & \ding{51}\\
+    \hline
+    RP04 & GET & \textsc{/orders/search} & \ding{51}\\
+    \hline
+\end{tabular}
+\\\\\\
+\begin{tabular}{ |p{1.2cm}|p{1.5cm}|p{5cm}|p{2cm}| }
+    \hline
+    \multicolumn{4}{|c|}{\textbf{Management}}\\
+    \hline
+    \hline
+    \textbf{Codice} & \textbf{Verbo} & \textbf{URI} & \textbf{Soddisfatto}\\
+    \hline
+    RM01 & GET & \textsc{/management/converter} & \texttildelow\\
+    \hline
+    RM02 & PUT & \textsc{/management/sale-scheduler} & \texttildelow\\
+    \hline
+    RM03 & PUT & \textsc{/management/contract-vals} & \texttildelow\\
+    \hline
+\end{tabular}
+\\\\\\
+I requisiti il cui soddisfacimento è segnato con il simbolo \texttildelow\ fanno riferimento all'interazione con la blockchain di cui è sviluppato l'\textit{adapter} per web3.js ma non sono ancora stati configurati endpoint e relativi controller. Il tutor esterno considera che il soddisfacimento dei requisiti rasenti il 100\% dato che la parte mancante è di facile implementazione.\\
+Il requisito facoltativo è considerato soddisfatto dal tutor esterno in quanto Adonis non supporta \textbf{JWT} out-of-the-box ma supporta \textbf{OAT} che funziona con una logica sufficientemente simile ed è stato implementato nelle chiamate necessarie.
+
+%**************************************************************
+\section{Osservazioni finali}
+    \subsection{Tecnologia: blockchain Ethereum}
+    Le tecnologie riguardanti crypto-valute e applicazioni decentralizzate, come detto in precedenza, sono qui per rimanere e, seppur non sia stata richiesta scrittura di smart contract per questo progetto, le conoscenze apprese sono sicuramente sufficienti per intraprendere un progetto in questo ambito nel prossimo futuro.
+
+    \subsection{Tecnologia: Node.js}
+    Data questa esperienza e sulla base di un breve confronto con alcuni colleghi, le impressioni sulla tecnologia Node.js sono nel complesso molto positive in particolare con l'utilizzo del linguaggio TypeScript. Nonostante il forte dinamismo dei tipi JavaScript (verso cui TypeScript compila) dia talvolta delle problematiche sul match di tipo e renda il debugging più complicato, la bassissima verbosità del linguaggio lo rende estremamente adatto per scrivere software in poco tempo. Ritengo possa tranquillamente sostituire Java come standard d'industria per la creazione applicazioni web sotto forma di piccoli monoliti o microservizi che non siano estremamente specializzati o richiedano alte prestazioni.
+
+    \subsection{Tecnologia: AdonisJS}
+    Adonis riesce a portare l'efficienza di Laravel nella creazione di applicazioni web nella piattaforma Node.js con linguaggio TypeScript. Se non c'è la necessità di creare un'architettura a microservizi, Adonis semplifica la maggior parte delle operazioni che un addetto al back-end potrebbe desiderare dalla gestione del database a quella degli endpoint.\\
+    Unica pecca, la mancanza di documentazione che indichi quale sia il modo corretto di espandere il framework con nuove funzionalità [\autoref{impl:ioc:no-docs}]. Quando questa documentazione sarà disponibile, Adonis potrà essere ritenuto maturo e perfettamente competitivo in questo ambito.
+
+    \subsection{Esperienza di stage}
+    L'esperienza è stata incredibilmente positiva perché svoltasi in un ottimo ambiente e per la sua struttura multidisciplinare che ha permesso di applicare le conoscenze apprese in ambiente universitario e ha favorito l'apprendimento di nuove competenze da subito spendibili sul mercato del lavoro.
