@@ -18,18 +18,18 @@ Il tutto al fine di comprendere al meglio il contesto di collocazione del prodot
 \label{contesto:blockchain}
     \subsection{Struttura dati}
     \label{contesto:blockchain:struttura}
-    Una \textbf{blockchain} è una struttura dati formata una catena di blocchi utilizzata per definire registri condivisi e immutabili. Ogni blocco della catena rappresenta un record del registro. Esso, oltre ai dati del record, contiene il timestamp relativo al suo inserimento nella catena, un hash che lo indentifica univocamente e l'hash del blocco precedente nella catena che funge da puntatore ad esso e rinforza i precedenti blocchi: con questo meccanismo, infatti, si garantisce la resistenza alla modifica dei dati presenti nel registro in quanto una modifica di un blocco nella catena obbligherebbe alla modifica tutti blocchi successivi.
+    Una \textbf{blockchain} è una struttura dati formata da una catena di blocchi utilizzata per definire registri condivisi e immutabili. Ogni blocco della catena rappresenta un record del registro. Esso, oltre ai dati del record, contiene il timestamp relativo al suo inserimento nella catena, un hash che lo indentifica univocamente e l'hash del blocco precedente nella catena che funge da puntatore al blocco precedente e rinforza i precedenti blocchi: con questo meccanismo, infatti, si garantisce la resistenza alla modifica dei dati presenti nel registro in quanto una modifica di un blocco nella catena obbligherebbe alla modifica di tutti blocchi successivi.
 
     \begin{figure}[h!]
         \centering
         \includegraphics[width=9cm]{blockchain.png}
-        \caption[Rappresentazione grafica di una Blockchain]{Rappresentazione grafica di una Blockchain. In verde abbiamo il nodo iniziale, in nero la catena principale e in viola le diramazioni orfane.}
+        \caption[Rappresentazione grafica di una Blockchain]{Rappresentazione grafica di una Blockchain. In verde il nodo iniziale, in nero la catena principale e in viola le diramazioni orfane.}
     \end{figure}
 
     Le blockchain sono condivise all'interno di reti \textit{peer-to-peer} in cui i vari nodi della rete possiedono una copia integrale o parziale della catena ed utilizzano dei protocolli comuni per la comunicazione con altri nodi e per la validazione e inserimento di nuovi blocchi.
     \\\\
-    Teoricamente, la blockchain non dovrebbe essere immutabile in quanto l'inserimento concorrente di blocchi diversi da parte di nodi diversi della rete sulla stessa catena crea spesso \textit{fork} ovvero diramazioni ugualmente valide.\\
-    Nella pratica, per ovviare al problema, man mano che la catena si propaga nella rete e i vari nodi prendono coscienza dell'avvenuto \textit{fork}, un algoritmo condiviso assegna un punteggio ad ogni diramazione in base alle caratteristiche dei blocchi pubblicati e tutti i nodi saranno costretti ad inserire nuovi blocchi sul ramo con punteggio più alto. Nel corso del tempo, il punteggio di una delle diramazioni diventerà molto più alto rispetto a quello delle avversarie e si distingueranno così una diramazione principale e delle diramazioni \textit{orfane} che non verranno più utilizzate in futuro.
+    Una blockchain non è necessariamente immutabile in quanto l'inserimento concorrente di blocchi diversi da parte di nodi diversi della rete sulla stessa catena può creare spesso \textit{fork} ovvero diramazioni ugualmente valide.\\
+    Per rendere la blockchain immutabile, man mano che la catena si propaga nella rete e i vari nodi prendono coscienza dell'avvenuto \textit{fork}, un algoritmo condiviso assegna un punteggio ad ogni diramazione in base alle caratteristiche dei blocchi pubblicati e tutti i nodi saranno costretti ad inserire nuovi blocchi sul ramo con punteggio più alto. Nel corso del tempo, il punteggio di una delle diramazioni diventerà molto più alto rispetto a quello delle avversarie e si distingueranno così una diramazione principale e delle diramazioni \textit{orfane} che non verranno più utilizzate in futuro.
 
     \subsection{Bitcoin}
 
@@ -45,8 +45,8 @@ Il tutto al fine di comprendere al meglio il contesto di collocazione del prodot
 
     \begin{figure}[h!]
         \centering
-        \hspace*{-3cm}
-        \includegraphics[width=18cm]{hashcash.png}
+%        \hspace*{-3cm}
+        \includegraphics[width=13.5cm]{hashcash.png}
         \caption[Esempio di algoritmo Hashcash]{Esempio di algoritmo \textbf{Hashcash}. Dopo 4251 iterazioni viene trovato il \textit{nonce} che vari la \textit{base string} in modo da ottenere un hash minore del \textit{target} di 2\textsuperscript{240}.}
         \label{img:hashcash}
     \end{figure}
@@ -63,9 +63,9 @@ Il tutto al fine di comprendere al meglio il contesto di collocazione del prodot
 \end{figure}
 
     \subsection{Scopo}
-    \textbf{Ethereum} offre tutto ciò che viene offerto da Bitcoin grazie ad una blockchain che sta alla base della crypto-valuta \textbf{ether} ma l'obiettivo che le due tecnologie intendono raggiungere è molto diverso.
+    \textbf{Ethereum} offre tutto ciò che viene offerto da Bitcoin grazie ad una blockchain che sta alla base della crypto-valuta \textbf{ether} ma con un obiettivo molto diverso.
     \\\\
-    Bitcoin è stata creata con lo specifico intento di decentralizzare l'economia mettendo a disposizione una valuta la cui stabilità e legalità non venisse controllata dalle banche centrali e rispettive nazioni ma fosse garantita da un sistema informatico distribuito totalmente indipendente da istituzioni centralizzate. Per fare ciò, Bitcoin si basa sulla blockchain precedentemente descritta [\autoref{contesto:blockchain}] e su un linguaggio di scripting molto limitato, \textit{stack-based}, intenzionalmente \textit{\textbf{non}-Turing-completo} (senza loop) chiamato \textbf{Script}, necessario solo ad registrare le transazioni decidendo, quindi, come gli utenti possono accedere alla rete Bitcoin ed utilizzarne la valuta.
+    Bitcoin è stata creata con lo specifico intento di mettere a disposizione una valuta la cui stabilità e legalità non venissero controllate dalle banche centrali e rispettive nazioni ma fossero garantite da un sistema informatico distribuito totalmente indipendente da istituzioni centralizzate. Per fare ciò, Bitcoin si basa sulla blockchain precedentemente descritta [\autoref{contesto:blockchain}] e su un linguaggio di scripting molto limitato, \textit{stack-based}, intenzionalmente \textit{\textbf{non}-Turing-completo} (senza loop) chiamato \textbf{Script}, necessario solo per registrare le transazioni decidendo, quindi, come gli utenti possono accedere alla rete Bitcoin ed utilizzarne la valuta.
     \\\\
     Ethereum, invece, permette di salvare dati arbitrari, rappresentati da una \textit{tupla chiave-valore}, nei propri blocchi e mette a disposizione un linguaggio di programmazione \textit{general-purpose}, \textit{Turing-completo} chiamato \textbf{Solidity} che consente di programmare la blockchain ed utilizzarla come un unico grande computer distribuito. Come Bitcoin, Ethereum è una macchina a stati ma, a differenza di Bitcoin, invece di tener solamente traccia di chi possiede la crypto-valuta, ad ogni transizione viene tracciato il cambio di stato delle tuple chiave-valore. Sulla base del codice caricato, il cambio di stato viene effettuato dalla \textbf{EVM} (Ethereum Virtual Machine) data dalla potenza di calcolo dei nodi sulla rete. Ethereum, dunque, tiene in memoria codice e dati di un software \textit{general-purpose}, esegue il codice e usa la blockchain per tener traccia dei cambiamenti sui dati. Si differenzia da un normale computer (oltre che per la condivisione e immutabilità del registro delle transizioni dato dalla blockchain) in quanto il passaggio di stato deve essere approvato da tutti i nodi presenti sulla rete.\\
     A questo punto, è chiaro che la valuta ether non sia il focus principale di questa tecnologia ma venga principalmente utilizzata come pagamento per i nodi che eseguono il codice e mantengono la blockchain.
@@ -120,7 +120,7 @@ contract VendingMachine {
         \caption{Ad ogni \textit{OPCODE} viene associato un costo in gas}
     \end{figure}
 
-    Ad ogni istruzione in una function viene assegnato un costo in gas in base al suo costo computazionale. Ad ogni richiesta di esecuzione di una function su smart contract che ne modifichi lo stato, il richiedente dichiara quante unità di gas sia disposto a consumare e quanti ether sia disposto a pagare per ogni unità. Un nodo della rete accetta la transazione ed esegue la function richiesta. Qualora la function termini la quantità di gas messa a disposizione dal richiedente (perché il valore scelto è troppo basso o si è entrati in un loop infinito) l'esecuzione viene conclusa forzatamente garantendo così in ogni caso la terminazione.
+    Ad ogni istruzione viene assegnato un costo in gas in base al suo costo computazionale. Ad ogni richiesta di esecuzione di una funzione su smart contract che ne modifichi lo stato, il richiedente dichiara quante unità di gas sia disposto a consumare e quanti ether sia disposto a pagare per ogni unità. Un nodo della rete accetta la transazione ed esegue la funzione richiesta. Qualora la funzione termini la quantità di gas messa a disposizione dal richiedente (perché il valore scelto è troppo basso o si è entrati in un loop infinito) l'esecuzione viene conclusa forzatamente garantendo così in ogni caso la terminazione.
 
 %**************************************************************
 \section{Token ERC-20}
@@ -148,14 +148,14 @@ contract VendingMachine {
     \[
     nTokenA \times nTokenB = k
     \]
-    dove \textit{nTokenA} e \textit{nTokenB} sono rispettivamente il numero dei due token presenti nella liquidity pool e \textit{k} è una costante.
+    dove \textit{nTokenA} e \textit{nTokenB} sono le quantità dei due token presenti nella liquidity pool e \textit{k} è una costante che viene decisa al momento del deposito della liquidità iniziale di token A e B.
 
     \subsection{wETH}
-    La crypto-valuta \textbf{ether} (rappresentata anche come \textbf{ETH}), al pari di tutte le valute, si comporta esattamente come un token fungibile con la differenza che essendo alla base della blockchain Ethereum non può essere conforme allo standard ERC-20 che è stato definito dopo di essa. Per ovviare al problema è stato successivamente creato \textbf{wETH} (sta per Wrapped ETH) con lo scopo di permettere lo scambio (con sistemi come Uniswap [\autoref{context:ethereum:uniswap}]) fra crypto-valuta ETH e un qualsiasi altro fungible token.\\
+    La crypto-valuta \textbf{ether} (rappresentata anche come \textbf{ETH}), al pari di tutte le valute, si comporta esattamente come un token fungibile con la differenza che essendo alla base della blockchain Ethereum non è conforme allo standard ERC-20 che è stato definito dopo di essa. Per ovviare al problema è stato successivamente creato \textbf{wETH} (sta per Wrapped ETH) con lo scopo di permettere lo scambio (con sistemi come Uniswap [\autoref{context:ethereum:uniswap}]) fra crypto-valuta ETH e un qualsiasi altro fungible token.\\
     Si noti come, così come wETH, esistono altri token \textit{wrapper} riferiti a valute legali o altre crypto-valute come \textbf{WBTC} per Bitcoin.
 
     \subsection{Il token Sync Lab}
-    L'azienda Sync Lab sta portando avanti un progetto di ricerca interno sullo studio di dei token fungibili mantenuti da un infrastruttura decentralizzata. Come risultato di questa ricerca sta prendendo forma un token basato su ERC-20 che rappresenta il valore di oggetti disponibili all'acquisto in una vetrina di un portale di e-commerce.
+    L'azienda Sync Lab sta portando avanti un progetto di ricerca interno sullo studio di token fungibili mantenuti da un infrastruttura decentralizzata. Come risultato di questa ricerca sta prendendo forma un token basato su ERC-20 che rappresenta il valore di oggetti disponibili all'acquisto in una vetrina di un portale di e-commerce.
 
 \newpage
 
@@ -171,9 +171,7 @@ Vincolo di progetto è quello di utilizzare \textbf{Node.js} come piattaforma pe
 È risultato, dunque, d'interesse per Sync Lab capire se vi fossero peculiarità legate all'applicazione di questa tecnologia in questo contesto. Essendo il caso d'uso dell'e-commerce abbastanza comune, è opportuno scegliere un framework per Node.js che permetta di non "reinventare la ruota" e programmare efficientemente [\autoref{tech:adonis}].
 
 \section{Un e-commerce basato su token fungibili}
-Bitcoin ha cambiato le regole del gioco economico mettendo a disposizione una moneta che non obblighi il proprio utilizzatore a dare fiducia alle istituzioni (inter)nazionali per garantirne legalità e stabilità. La rivoluzione è stata tale da far nascere nuove crypto-valute più o meno valide che vengono sempre di più utilizzate per la loro intrinseca libertà e per le enormi possibilità di investimento.
-\\\\
-Non sappiamo se le valute \textit{fiat} (monete a corso legale rilasciate dalle banche centrali) diventeranno un ricordo del passato, ma è ragionevole pensare che crypto-valute e relative blockchain siano qui per restare e in tale contesto è utile studiare soluzioni che siano in grado di farne buon uso. Da qui nasce l'idea di un e-commerce basato su token fungibili che abbia le seguenti caratteristiche:
+Bitcoin mette a disposizione una moneta che non obblighi il proprio utilizzatore a dare fiducia alle istituzioni (inter)nazionali per garantirne legalità e stabilità. È ragionevole pensare che crypto-valute e relative blockchain siano qui per restare e in tale contesto è utile studiare soluzioni che siano in grado di farne buon uso. Da qui nasce l'idea di un e-commerce basato su token fungibili che abbia le seguenti caratteristiche:
 \begin{itemize}
     \item utilizzo semplice per chi già possiede crypto-valuta grazie alla facilità di scambio fra essa e token mediante Uniswap;
     \item anonimato garantito (per chi ne volesse fruire) dato dalla mancata associazione fra un wallet e una persona fisica (il wallet può essere usato da chiunque ne conosca la chiave privata);
@@ -188,8 +186,8 @@ Non sappiamo se le valute \textit{fiat} (monete a corso legale rilasciate dalle 
 
     \begin{figure}[h!]
         \centering
-        \hspace*{-2cm}
-        \includegraphics[width=18cm]{dapp-diagram.png}
+%        \hspace*{-2cm}
+        \includegraphics[width=13.5cm]{dapp-diagram.png}
         \caption{Struttura tipica di un'applicazione decentralizzata}
     \end{figure}
 

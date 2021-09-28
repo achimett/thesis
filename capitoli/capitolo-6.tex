@@ -215,7 +215,7 @@ export default class AppProvider {
         this.app.container.singleton('External/CoinGecko', () => new CoinGecko());
 
         this.app.container.singleton(
-            'Trendy/Exchange',
+            'External/Exchange',
             () =>
             new CoinGeckoExchangeProvider(
                 this.app.container.resolveBinding('External/CoinGecko'),
@@ -241,10 +241,45 @@ export default class AppProvider {
 
     \subsection{Mancanza documentazione scrittura package}
     \label{impl:ioc:no-docs}
-    Dalla documentazione sembra che il modo migliore per aggiungere il supporto a librerie esterne sia quello di creare dei \textit{package} specifici per AdonisJS per poi configurarli mediante l'IoC Container. Il problema è che la documentazione riguardante la creazione di package Adonis deve ancora essere scritta e i tentativi di reverse engineering di tale funzionamento sono stati vani. La metodologia utilizzata per integrare feature funziona ma evidentemente non è quella più corretta in quanto alcune funzionalità come la creazione di \textit{mock} da parte dell'IoC Container per i test d'integrazione non sembra funzionare a dovere.
+    Dalla documentazione sembra che il modo migliore per aggiungere il supporto a librerie esterne sia quello di creare dei \textit{package} specifici per AdonisJS per poi configurarli mediante l'IoC Container. Il problema è che la documentazione riguardante la creazione di package Adonis deve ancora essere scritta e i tentativi di reverse engineering su tale funzionamento sono stati vani.
+    \\\\
+    La metodologia utilizzata per integrare nuove feature è stata l'uso della componente \textbf{contract} di Adonis. Di seguito viene riportato il contract riguardante i servizi blockchain:
+    \begin{lstlisting}[language=JavaScript]
+declare module '@ioc:External/Blockchain' {
+    export interface BlockchainProviderContract {
+        pay(address: string, amount: bigint): Promise<{ ok: boolean; body?: any }>;
+    }
+
+    const Blockchain: BlockchainProviderContract;
+    export default Blockchain;
+}
+    \end{lstlisting}
+    Viene dichiarata l'interfaccia \textsc{BlockchainProviderContract} dell'adapter per la libreria web3.js [\autoref{img:adapter-web3js}] e viene, dunque, definita una costante globale \textsc{Blockchain} che abbia come tipo tale interfaccia. Il file provider riportato in \autoref{impl:ioc} permette il binding del tipo concreto \textsc{Web3jsBlockchainProvider} sulla costante \textsc{Blockchain}. Se volessi, però, dichiarare \textsc{BlockchainProviderContract} come dipendenza di un controller come \textsc{OrderController} (si veda il listato seguente), la \textit{dependency injection} non andrebbe a buon fine.
+    \begin{lstlisting}[language=JavaScript]
+export default class OrdersController {
+    // Nonostante le sperimentazioni fatte,
+    // `blockchain` risulta _undefined_
+    constructor(private readonly blockchain: BlockchainProviderContract) {}
+    ...
+}
+    \end{lstlisting}
+
+    \noindent Inoltre, la creazione di \textit{mock} da parte dell'IoC Container per i test d'integrazione non sembra funzionare a dovere.
+    \begin{lstlisting}[language=JavaScript]
+// La seguente istruzione dovrebbe sostituire il
+// binding del file *provider* ma cio' non accade
+Application.container.fake(
+    'External/Blockchain',
+    () => new MockBlockchainProvider());
+    \end{lstlisting}
+
+    Uno dei creatori di AdonisJS sostiene di aver implementato tutte le funzionalità esterne al \textit{core} del framework tramite l'uso dei \textit{package} [\autoref{img:ioc-no-docs}] il cui funzionamento, però, non è ancora stato documentato. Le soluzioni trovate sono frutto di tentativi ed errori e non sono soddisfacenti dato che introducono le problematiche appena riportate.
+    \\\\
+    Ritengo, dunque, che, a causa di questa mancanza, il framework non sia ancora maturo per un utilizzo in produzione che implementi funzionalità non da subito disponibili con esso.
 
     \begin{figure}[h!]
         \centering
-        \includegraphics[width=10cm]{package-dev-trello.png}
-        \caption[Card Trello package development AdonisJS]{Il task riguardante la scrittura di package è ancora presente come card sul \textbf{Trello} ufficiale di AdonisJS ed è ancora in corso.}
+        \includegraphics[width=12cm]{package-dev-trello.png}
+        \caption[Card Trello package development AdonisJS]{Il task riguardante la scrittura della guida al package development è ancora presente come card sul \textbf{Trello} ufficiale di AdonisJS ed è ancora in corso.}
+        \label{img:ioc-no-docs}
     \end{figure}

@@ -35,6 +35,7 @@ Questo capitolo ha l'obiettivo di presentare l'architettura del prodotto e, se n
         \end{enumerate}
 
         \subsubsection{Adapter per servizi esterni}
+        \label{proj:adapter}
         Al fine di aggiungere funzionalità non previste dal caso d'uso generale preso in considerazione da Adonis e mantenere il più possibile alta la manutenibilità dell'applicativo, si è fatto uso del pattern \textit{adapter} per disaccoppiare le classi controller dalle classi delle librerie web3.js [\autoref{img:adapter-web3js}] e CoinGecko-API [\autoref{img:adapter-coingecko}].
 
         \begin{figure}[h!]
